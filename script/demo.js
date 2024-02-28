@@ -11,12 +11,15 @@ const hypervisor = new ethers.Contract(test_hypervisor, HypervisorAbi, provider)
 const pool = new ethers.Contract(test_pool, RoxPosnPoolAbi, provider);
 
 async function run() {
-    let limitLower = await hypervisor.limitLower();
-    let limitUpper = await hypervisor.limitUpper();
+    // let limitLower = await hypervisor.limitLower();
+    // let limitUpper = await hypervisor.limitUpper();
+    // console.log("limitLower::", limitLower.toString())
+    // console.log("limitUpper::", limitUpper.toString())
     let key = ethers.utils.solidityKeccak256(["address", "int24", "int24"],
-        [hypervisor.address, limitLower, limitUpper]);
-    let result = await pool.positionsSum(key)
-    console.log("result::", result)
+        [hypervisor.address, 6000, 8400]);
+    console.log("key::", key)
+    // let result = await pool.positionsSum(key)
+    // console.log("result::", result)
 }
 
 run()
