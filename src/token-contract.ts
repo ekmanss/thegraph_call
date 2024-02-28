@@ -22,7 +22,7 @@ export function handleTransfer(event: TransferEvent): void {
     entity.blockTimestamp = event.block.timestamp
     entity.transactionHash = event.transaction.hash
 
-    entity.save()
+
 
     // let tupleArray: Array<ethereum.Value> = [
     //     ethereum.Value.fromAddress(Address.fromString('0x0000000000000000000000000000000000000420')),
@@ -45,5 +45,10 @@ export function handleTransfer(event: TransferEvent): void {
     let encoded = ethereum.encode(valueFromTuple)!
     let decoded = ethereum.decode('(address,uint256)', encoded)
     let MyTest_contract = MyTestAbi.bind(Address.fromString(MyTestAddr))
-    let rs_1 = MyTest_contract.myfunc(tuple as MyTestAbi__myfuncInputTStruct, encoded)
+
+    let changed = changetype<MyTestAbi__myfuncInputTStruct>(tuple)
+    let rs_1 = MyTest_contract.myfunc(changed, encoded)
+
+    entity.blockNumber = rs_1
+    entity.save()
 }
