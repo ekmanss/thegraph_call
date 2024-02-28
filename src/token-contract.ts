@@ -5,7 +5,7 @@ import {MyTestAbi, MyTestAbi__myfuncInputTStruct} from "../generated/TokenContra
 import {Transfer} from "../generated/schema"
 import {
     Address,
-    Bytes, ethereum, BigInt, log
+    Bytes, ethereum, BigInt, log, ByteArray
 } from "@graphprotocol/graph-ts";
 import {HypervisorAbi} from "../generated/TokenContract/HypervisorAbi";
 import {PoolAbi} from "../generated/TokenContract/PoolAbi";
@@ -48,20 +48,18 @@ export function handleTransfer(event: TransferEvent): void {
     let limitLower = hypervisorContract.limitLower()
     let limitUpper = hypervisorContract.limitUpper()
 
-    let new_tupleArray: Array<ethereum.Value> = [
-        ethereum.Value.fromAddress(Address.fromString(test_hypervisor)),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(limitLower)),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(limitUpper)),
-    ]
-    let new_tuple = changetype<ethereum.Tuple>(new_tupleArray);
-    // let new_valueFromTuple = ethereum.Value.fromTuple(new_tuple)
-    let fromArray = ethereum.Value.fromArray(new_tupleArray)
-    let new_encoded = ethereum.encode(fromArray)!
-    let keccak256_done = crypto.keccak256(new_encoded)
+    let address_bytes = ethereum.encode(ethereum.Value.fromAddress(Address.fromString(test_hypervisor)))!;
+    let int1_bytes = ethereum.encode(ethereum.Value.fromSignedBigInt(BigInt.fromI32(limitLower)))!;
+    let int2_bytes = ethereum.encode(ethereum.Value.fromSignedBigInt(BigInt.fromI32(limitUpper)))!;
+    let address_packed = changetype<ByteArray>(address_bytes.subarray(12, 32));
+    let int24_packed1 = changetype<ByteArray>(int1_bytes.subarray(29, 32));
+    let int24_packed2 = changetype<ByteArray>(int2_bytes.subarray(29, 32));
 
-    log.info("keccak256_done: {}", [keccak256_done.toHex()])
+    let packed = address_packed.concat(int24_packed1).concat(int24_packed2);
+    let keccak256_done = crypto.keccak256(packed);
 
-    let info = poolContract.positionsSum(Bytes.fromHexString("0xd97aa3426c2dd1df4581adf215f4adb67a49b04624681046b5b6bdedc63979a5"))
+    // let key = ethers.utils.solidityKeccak256(["address", "int24", "int24"],[hypervisor.address, limitLower, limitUpper]);
+    let info = poolContract.positionsSum(Bytes.fromByteArray(keccak256_done))
 
     entity.blockTimestamp = info.getValue0().plus(info.getValue1()).plus(info.getValue2()).plus(info.getValue3()).plus(info.getValue4())
     entity.save()
