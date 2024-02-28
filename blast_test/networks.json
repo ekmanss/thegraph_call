@@ -1,0 +1,8 @@
+{
+  "blast-testnet": {
+    "TokenContract": {
+      "address": "0x4200000000000000000000000000000000000022",
+      "startBlock": 2210550
+    }
+  }
+}
