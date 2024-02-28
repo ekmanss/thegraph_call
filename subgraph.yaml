@@ -22,11 +22,9 @@ dataSources:
       abis:
         - name: TokenContract
           file: ./abis/TokenContract.json
+        - name: MyTestAbi
+          file: ./abis/MyTest.json
       eventHandlers:
-        - event: Approval(indexed address,indexed address,uint256)
-          handler: handleApproval
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
       file: ./src/token-contract.ts
