@@ -24,6 +24,10 @@ dataSources:
           file: ./abis/TokenContract.json
         - name: MyTestAbi
           file: ./abis/MyTest.json
+        - name: HypervisorAbi
+          file: ./abis/Hypervisor.json
+        - name: PoolAbi
+          file: ./abis/Pool.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
